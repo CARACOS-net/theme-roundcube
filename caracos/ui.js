@@ -587,10 +587,6 @@ function rcube_elastic_ui()
                 });
             }
 
-            if (!touch && list == 'message_list') {
-                message_list_hover_menu_init(table.parent());
-            }
-
             // https://github.com/roundcube/elastic/issues/45
             // Draggable blocks scrolling on touch devices, we'll disable it there
             if (touch && rcmail[list]) {
@@ -874,8 +870,8 @@ function rcube_elastic_ui()
 
                 $('.popup', context).addClass('formcontent').append(
                     $('<div class="form-group row">')
-                        .append(label.attr('for', id).addClass('col-sm-4 col-form-label text-break'))
-                        .append($('<div class="col-sm-8">').append(input))
+                        .append(label.attr('for', id).addClass('col-sm-2 col-form-label'))
+                        .append($('<div class="col-sm-10">').append(input))
                 );
 
                 input.focus();
@@ -2714,7 +2710,7 @@ function rcube_elastic_ui()
             return true;
         };
 
-        dialog = rcmail.simple_dialog(dialog, 'listoptionstitle', save_func, {
+        dialog = rcmail.simple_dialog(dialog, rcmail.gettext('listoptionstitle'), save_func, {
             closeOnEscape: true,
             minWidth: 400
         });
@@ -2772,7 +2768,7 @@ function rcube_elastic_ui()
         var props = {_uid: rcmail.env.uid, _mbox: rcmail.env.mailbox, _framed: 1},
             dialog = $('<iframe>').attr({id: 'headersframe', src: rcmail.url('headers', props)});
 
-        rcmail.simple_dialog(dialog, 'arialabelmessageheaders', null, {
+        rcmail.simple_dialog(dialog, rcmail.gettext('arialabelmessageheaders'), null, {
             cancel_button: 'close',
             height: 400
         });
@@ -2785,7 +2781,7 @@ function rcube_elastic_ui()
     {
         var dialog = $('#properties-menu').clone();
 
-        rcmail.simple_dialog(dialog, 'properties', null, {
+        rcmail.simple_dialog(dialog, rcmail.gettext('properties'), null, {
             cancel_button: 'close',
             height: 400
         });
@@ -2807,7 +2803,7 @@ function rcube_elastic_ui()
             return rcmail.command('import-messages', $(dialog.find('form')[0]));
         };
 
-        rcmail.simple_dialog(dialog, 'importmessages', save_func, {
+        rcmail.simple_dialog(dialog, rcmail.gettext('importmessages'), save_func, {
             button: 'import',
             closeOnEscape: true,
             minWidth: 400
@@ -3156,93 +3152,13 @@ function rcube_elastic_ui()
     };
 
     /**
-     * Initialize hover menu for the mail messages list
-     */
-    function message_list_hover_menu_init(list_element)
-    {
-        var record,
-            menu = $('<div class="menu listing-hover-menu">'
-                + '<span class="txt"></span>'
-            //    + '<a class="button read" data-flag="read" title="' + rcmail.gettext('markasread') + '"></a>'
-            //    + '<a class="button unread d-none" data-flag="unread" title="' + rcmail.gettext('markasunread') + '"></a>'
-                + '<a class="button flag" data-flag="flagged" title="' + rcmail.gettext('markasflagged') + '"></a>'
-                + '<a class="button unflag d-none" data-flag="unflagged" title="' + rcmail.gettext('markasunflagged') + '"></a>'
-                + '<a class="button delete" data-flag="delete" title="' + rcmail.gettext('deletemessage') + '"></a>'
-                + '<a class="button undo d-none" data-flag="undelete" title="' + rcmail.gettext('undeletemessage') + '"></a>'
-                + '</div>'
-            ),
-            hide_menu = function() {
-                menu.css({top: '-1000px'});
-                record = null;
-            };
-
-        // Append the menu to the list wrapper, handle events to show/hide menu on hover
-        list_element.append(menu)
-            .on('mouseenter', 'tr', function(e) {
-                if (record != e.currentTarget) {
-                    message_list_hover_menu(menu, record = e.currentTarget);
-                }
-            })
-            .on('mouseleave', 'tr', function(e) {
-                if (e.relatedTarget == list_element[0]) {
-                    hide_menu();
-                }
-            })
-            .on('mouseleave', hide_menu);
-
-        // Buttons onclick handler
-        menu.find('a').click(function(e) {
-            var flag = $(this).data('flag');
-
-            if (flag == 'delete') {
-                rcmail.delete_messages(e, record.uid);
-            }
-            else {
-                rcmail.mark_message(flag, record.uid);
-            }
-
-            // Hide the menu, event handlers will bring it back when needed, with refreshed state
-            hide_menu();
-        });
-    }
-
-    /**
-     * Position the hover menu and set buttons state for the specific message
-     */
-    function message_list_hover_menu(menu, record)
-    {
-        var message = rcmail.message_list.rows[record.uid],
-            element = $(record),
-            top = element.offset().top - element.parent().offset().top + (element.height() - menu.outerHeight()) / 2,
-            buttons = {
-                read: message.unread,
-                unread: !message.unread,
-                flag: !message.flagged,
-                unflag: message.flagged,
-                'delete': !message.deleted,
-                undo: message.deleted
-            };
-
-        // Position the menu
-        menu.css({top: top + 'px'});
-
-        // Show/hide buttons according to the hovered message state
-        Object.keys(buttons).forEach(function(btn) {
-            menu.find('a.' + btn)[buttons[btn] ? 'removeClass' : 'addClass']('d-none');
-        });
-
-        // Update the txt element in the menu
-        menu.find('span.txt').text(element.closest('table').is('.sort-size') ? message.date : message.size);
-    }
-
-    /**
      * Recipient (contact) selector
      */
     function recipient_selector(field, opts)
     {
         if (!opts) opts = {};
 
-        var title = opts.title || 'insertcontact',
+        var title = rcmail.gettext(opts.title || 'insertcontact'),
             dialog = $('#recipient-dialog'),
             parent = dialog.parent(),
             close_func = function() {
