@@ -4,15 +4,15 @@ A fork of [skins/elastic](https://github.com/roundcube/roundcubemail/tree/master
 with some changes
 
 ## Installation
-Move the skins folder in the Root location of the roundcube installation and adjust ownership
+Move the Caracos skin folder to the Root location of the roundcube installation and adjust ownership
 
 ```
- $ROOT = "/var/www/roundcube"
- mv ./skins $ROOT
- chown -R roundcube:www-data $ROOT/skins
+ sudo rm -rf /var/www/roundcube/skins/caracos;
+ sudo mv ./caracos /var/www/roundcube/skins/caracos;
+ sudo chown roundcube:www-data -R /var/www/roundcube/skins/caracos
 ```
 
-## Compile css files 
+## Compile css files
 
 If you make some changes on the css (colors for example), you need to recompile css files
 
@@ -26,7 +26,7 @@ If you make some changes on the css (colors for example), you need to recompile 
  lessc --clean-css="--s1 --advanced" styles/embed.less > styles/embed.min.css
 ```
 
-## Default theme
+## Make it a default theme
 
 Create /var/www/roundcube/config/local.inc.php with
 ```
