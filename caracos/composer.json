@@ -1,0 +1,8 @@
+{
+    "name": "caracos/caracos",
+    "type": "roundcube-skin",
+    "license": "GPL-3.0+",
+    "require": {
+        "roundcube/plugin-installer": ">=0.3.0"
+    }
+}
